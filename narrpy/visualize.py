@@ -1,4 +1,3 @@
-import importlib
 import pandas as pd
 import numpy as np
 import re
@@ -233,12 +232,16 @@ def narr_summary_heatmap(summary_data_file: str):
         fig.show()
 
 
-def correlation_boxplots(summary_data_df: pd.DataFrame):
+def correlation_boxplots(summary_data_dir: str):
+    plot_df = pd.DataFrame()
+    for file in os.listdir(summary_data_dir):
+        if file.endswith('.csv'):
+            plot_df = plot_df.append(
+                pd.read_csv(summary_data_dir + file)
+            )
     fig = px.box(
-        summary_data_df.fillna(0)[
-            (summary_data_df['non_event'] == 0) &
-            (summary_data_df['smoothing_window'] <= 200) &
-            (summary_data_df['minimal_summary_frequency'] <= 3)
+        plot_df.fillna(0)[
+            (plot_df['minimal_summary_frequency'] <= 3)
         ],
         x='smoothing_window',
         y='correlation',

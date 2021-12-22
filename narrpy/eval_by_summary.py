@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import os
 import ast
 
 from pandas.core.frame import DataFrame
@@ -107,7 +108,13 @@ class Configuration:
         ].correlation.mean()
 
 
-def get_mean_value_per_configuration(summary_data_df) -> pd.DataFrame:
+def get_mean_value_per_configuration(summary_data_dir) -> pd.DataFrame:
+    summary_data_df = pd.DataFrame()
+    for file in os.listdir(summary_data_dir):
+        if file.endswith('.csv'):
+            summary_data_df = summary_data_df.append(
+                pd.read_csv(summary_data_dir + file)
+            )
     configurations = set(
         [
             str(item) for item in zip(
@@ -133,6 +140,7 @@ def get_mean_value_per_configuration(summary_data_df) -> pd.DataFrame:
 
 
 def get_best_configurations(mean_corr_df: pd.DataFrame):
+    print('----')
     mean_df = pd.DataFrame(mean_corr_df)
     mean_df['correlation mean'] = mean_df['correlation mean'].round(4)
 
